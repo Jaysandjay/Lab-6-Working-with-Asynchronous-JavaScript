@@ -111,7 +111,27 @@ function sequential(userId){
     })
 }
 
-sequential(17)
+// sequential(17)
+
+// Parallel
+function parallel(userId){
+    Promise.all([getUserProfiles(), getUserPosts(), getUserComments()])
+    .then(([profiles, posts, comments]) => {
+        const user = profiles.find((profile) => profile.id === userId)
+        console.log("User", user)
+
+        const userPosts = posts.filter((post) => post.creator === userId)
+        console.log("User Posts", userPosts)
+
+        let userComments = []
+        userPosts.forEach(post => {
+        userComments = comments.filter((comment) => comment.postId === post.id)    
+        })
+        console.log("User Comments are", userComments)
+    })
+}
+
+// parallel(23)
 
 
 
@@ -122,55 +142,32 @@ sequential(17)
 // Rewrite each function to use async/await syntax instead of .then.
 // Use try...catch blocks to handle errors and provide custom error messages for each failure point.
 
-// console.log("Refactor with Async/Await:")
 
-// async function delay1(ms){
-//     return setTimeout(ms)
-// }
-
-
-// async function getUserProfile1() {
-//     await delay1(3000)
-//     return {
-//         id: 123,
-//         url: "Fake URL",
-//         name: "John"
-//     }
-// }
+async function delay1(ms){
+    return setTimeout(ms)
+}
 
 
-// async function getUserComments1(postId){
-//     await delay1(3000)
-//     // Return is a promise
-//     return ["comment1", "comment2", "comment3"]
-// }
+async function getUserProfile1() {
+    await delay1(3000)
+    return profiles
+}
 
 
-// async function getUserPosts1(userId){
-//     await delay1(3000)
-//     // Return is a promise
-//     return [
-//         {
-//             postId: 1,
-//             post: "Hello"
-//         },
-//         {
-//             postId: 2,
-//             post: "This is another post"
-//         }
-//     ]
-// }
+async function getUserComments1(){
+    await delay1(3000)
+    return comments
+}
 
-// const profile1 = await getUserProfile1()
-// console.log("user profile", profile1)
 
-// const posts1 = await getUserPosts1(profile1.id)
-// console.log("post by user id", posts1)
+async function getUserPosts1(){
+    await delay1(3000)
 
-// const comments1 = await getUserComments1( posts1[0].postId)
-// console.log("get comment by post id", comments1)
+    return posts
+}
 
-// console.log(`\n`)
+
+
 
 
 
