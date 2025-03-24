@@ -143,30 +143,91 @@ function parallel(userId){
 // Use try...catch blocks to handle errors and provide custom error messages for each failure point.
 
 
-async function delay1(ms){
-    return setTimeout(ms)
+function delay1(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
-async function getUserProfile1() {
-    await delay1(3000)
-    return profiles
+async function getUserProfiles1() {
+    try {
+     await delay1(3000)
+    return profiles   
+    }catch (error){
+        console.error("Error fetching profiles")
+    }
+    
 }
 
 
 async function getUserComments1(){
+    try {
     await delay1(3000)
-    return comments
+    return comments    
+    } catch (error){
+        console.error("Error fetching comments")
+    }
+    
 }
 
 
 async function getUserPosts1(){
-    await delay1(3000)
+    try{
+      await delay1(3000)
+      return posts  
+    } catch(error){
+        console.error("error fetching Posts", error)
+    }
+}
 
-    return posts
+// sequential 
+async function sequentialAsyncSyntax(userId){
+    try{
+        const profiles = await getUserProfiles1()
+        const user = profiles.find((profile) => profile.id === userId)
+        console.log("User", user)
+
+        const posts = await getUserPosts1()
+        const userPosts = posts.filter((post) => post.creator === userId)
+        console.log("User Posts", userPosts)
+
+        const comments = await getUserComments1()
+        let userComments = []
+        userPosts.forEach(post => {
+            userComments = comments.filter((comment) => comment.postId === post.id)    
+        })
+        console.log("User Comments are", userComments)
+    } catch(error){
+        console.error("Error fetching")
+    }
 }
 
 
+// parallel
+async function parallelAsyncSyntax(userId){
+    try{
+        const [profiles, posts, comments] = await Promise.all([
+            getUserProfiles1(),
+            getUserPosts1(),
+            getUserComments1()
+        ])
+        const user = profiles.find((profile) => profile.id === userId)
+        console.log("User", user)
+
+        const userPosts = posts.filter((post) => post.creator === userId)
+        console.log("User Posts", userPosts)
+        
+        let userComments = []
+        userPosts.forEach(post => {
+        userComments = comments.filter((comment) => comment.postId === post.id)    
+        })
+        console.log("User Comments are", userComments)
+    } catch(error){
+        console.error("Error fetching")
+    }
+
+}
+
+parallelAsyncSyntax(17)
 
 
 
