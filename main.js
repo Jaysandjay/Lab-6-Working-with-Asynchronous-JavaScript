@@ -4,6 +4,8 @@
 // Each function should return a promise that resolves after a delay, simulating a time-intensive operation 
 // (e.g., fetching data from a remote server).
 
+
+// USED FAKER.JS TO GATHER FAKE DATA
 const profiles = [
     {
         id: 17,
@@ -134,10 +136,6 @@ function parallel(userId){
 // parallel(23)
 
 
-
-
-
-
 // Refactor with Async/Await:
 // Rewrite each function to use async/await syntax instead of .then.
 // Use try...catch blocks to handle errors and provide custom error messages for each failure point.
@@ -179,6 +177,7 @@ async function getUserPosts1(){
     }
 }
 
+
 // sequential 
 async function sequentialAsyncSyntax(userId){
     try{
@@ -200,6 +199,7 @@ async function sequentialAsyncSyntax(userId){
         console.error("Error fetching")
     }
 }
+// sequentialAsyncSyntax(17)
 
 
 // parallel
@@ -224,22 +224,139 @@ async function parallelAsyncSyntax(userId){
     } catch(error){
         console.error("Error fetching")
     }
-
 }
 
-parallelAsyncSyntax(17)
-
-
-
+// parallelAsyncSyntax(17)
 
 
 // Error Handling Simulation:
-// Modify your functions so that one or more of them may randomly reject (fail). For instance, the fetchComments function might fail randomly with an error message like "Failed to fetch comments."
+// Modify your functions so that one or more of them may randomly reject (fail). For instance, the fetchComments function might fail 
+// randomly with an error message like "Failed to fetch comments."
 // Handle each error case gracefully, displaying a relevant message without stopping the entire application.
 
+// sequential 
+async function sequentialAsyncSyntaxRandom(userId){
+
+    // Create Failure at random
+    const profileFail = Math.floor(Math.random() * 2)
+    const postFail = Math.floor(Math.random() * 2)
+    const commentFail = Math.floor(Math.random() * 2)
+    console.log(profileFail)
+    console.log(postFail)
+    console.log(commentFail)
+
+    if(profileFail){
+        console.error("Failure with fetching profiles")
+    }else{
+        const profiles = await getUserProfiles1()
+        const user = profiles.find((profile) => profile.id === userId)
+        console.log("User", user)   
+    }   
+
+    if(postFail){
+        console.error("Failure with fetching posts")
+    }else {
+        const posts = await getUserPosts1()
+        const userPosts = posts.filter((post) => post.creator === userId)
+        console.log("User Posts", userPosts)  
+    }
+    
+    if(profileFail){
+        console.error("Failure fetching comments due to failure of fetching profiles")
+    }else if(commentFail){
+        console.error("Failure fetching comments")
+    }else {
+        const comments = await getUserComments1()
+        let userComments = []
+        userPosts.forEach(post => {
+            userComments = comments.filter((comment) => comment.postId === post.id)    
+        })
+        console.log("User Comments are", userComments)  
+    }
+}
+
+// sequentialAsyncSyntaxRandom(17)
+
+
+
+// For the parallel function, make each promise randomly fail within its code  
+
+const profileFail = Math.floor(Math.random() * 2)
+const postFail = Math.floor(Math.random() * 2)
+const commentFail = Math.floor(Math.random() * 2)
+
+
+
+async function getUserProfilesRandom() {
+    if(profileFail){
+        console.error("Failure in fetching profiles")
+    }else{
+        await delay1(3000)
+        return profiles   
+    }
+}
+
+
+async function getUserPostsRandom(){
+    if(postFail){
+        console.error("Failure in fetching posts")
+    }else{
+        await delay1(3000)
+        return posts  
+    }
+}
+
+
+async function getUserCommentsRandom(){
+    if(postFail){
+        console.error("Cant fetch comments due to failure of fetching posts")
+    }else if (commentFail){
+        console.error("Faliure in fetching comments")
+    }else{
+        await delay1(3000)
+        return comments    
+    }
+}
 
 
 
 // Chaining Async Functions:
 // Design a primary getUserContent function that fetches all the data in sequence and logs it step-by-step, combining the results at the end.
 // Inside this function, call each async function in order, awaiting each result and logging a message like "User profile retrieved," "Posts retrieved," etc., to visualize the sequence.
+
+async function getUserContent(userId){
+    let content = []
+    console.log("Fetching content")
+    try{
+        getUserProfiles().then(profiles => {
+            const user = profiles.find((profile) => profile.id === userId)
+            console.log("User profile retrieved")
+            content.push(user)
+            return user
+        }).then(() => {
+            getUserPosts().then(posts => {
+                const userPosts = posts.filter((post) => post.creator === userId)
+                console.log("User Posts retrieved")
+                content.push(userPosts)
+                return userPosts
+            }).then((userPosts) =>{
+                getUserComments().then(comments => {
+                    let userComments = []
+                    userPosts.forEach(post => {
+                    userComments = comments.filter((comment) => comment.postId === post.id)    
+                    })
+                    console.log("User Comments retrieved")
+                    content.push(userComments)
+                    return userComments
+                })
+                .then(() => {
+                    console.log(content)
+                })
+            })
+        })
+    }catch (error){
+        console.error("Failure to fetch data")
+    }
+}
+
+getUserContent(17)
