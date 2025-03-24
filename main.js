@@ -4,75 +4,116 @@
 // Each function should return a promise that resolves after a delay, simulating a time-intensive operation 
 // (e.g., fetching data from a remote server).
 
-console.log("Simulate Data Fetching Using Promises:")
+const profiles = [
+    {
+        id: 17,
+        name: "Jeremy Matthews"
+    },
+    {
+        id: 23,
+        name: "Peter Wilson"
+    }        
+]
 
-
-function delay(ms){
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-
-async function getUserProfile() {
-    await delay(3000)
-    // Return is a promise
-    return {
-        id: 123,
-        url: "Fake URL",
-        name: "John"
+const posts = [
+    {
+        id: 10,
+        creator: 17,
+        body: 'Join value picture scene above environmental. Population trade return. Interesting American player coach often ahead alone.'
+    },
+    {
+        id: 11,
+        creator: 17,
+        body: 'Interesting pressure check skill term. Identify benefit little TV.'
+    },
+    {
+        id: 12,
+        creator: 2,
+        body: 'Hot rate dark special. Security bar wife management entire structure red. Art my participant clear suggest court why. Thank owner decade level might field form.'
+    },
+    {
+        id: 13,
+        creator: 23,
+        body: 'Then human nor technology toward expect again else. Too prove affect.'
     }
+]
+
+const comments = [
+    {
+        id: 3847,
+        postId: 11,
+        body: 'Ten program family instead condition together. Improve treat but prepare them space onto.'
+    },
+    {
+        id: 3847,
+        postId: 11,
+        body: 'Catch into forget dog. Company short minute. Including have consumer arm someone face interesting.'
+    },
+    {
+        id: 3847,
+        postId: 13,
+        body: 'Serve main effort.'
+    }
+]
+
+
+function getUserProfiles() {
+    return new Promise (resolve => {
+        setTimeout(() =>{
+            resolve(profiles)  
+        }, 2000)
+    })      
 }
 
 
-async function getUserComments(postId){
-    await delay(3000)
-    // Return is a promise
-    return ["comment1", "comment2", "comment3"]
+function getUserComments(){
+    return new Promise (resolve => {
+        setTimeout(() => {
+            resolve(comments)
+        }, 2000)
+    })   
 }
 
 
-async function getUserPosts(userId){
-    await delay(3000)
-    // Return is a promise
-    return [
-        {
-            postId: 1,
-            post: "Hello"
-        },
-        {
-            postId: 2,
-            post: "This is another post"
-        }
-    ]
+function getUserPosts(){
+    return new Promise(resolve => {
+        setTimeout(()=> {
+            resolve(posts)  
+        }, 2000)
+    })
 }
-
-const profile = await getUserProfile()
-console.log("user profile", profile)
-
-const posts = await getUserPosts(profile.id)
-console.log("post by user id", posts)
-
-const comments = await getUserComments( posts[0].postId)
-console.log("get comment by post id", comments)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 // Implement Sequential and Parallel Data Fetching:
-// Fetch the data using both sequential and parallel techniques. For example, you could fetch the user profile first, then the posts for that user, and finally, the comments on each post in a sequential flow.
+// Fetch the data using both sequential and parallel techniques. For example, you could fetch the user profile first, 
+// then the posts for that user, and finally, the comments on each post in a sequential flow.
 // In another instance, fetch the user, posts, and comments in parallel, observing how they differ in response time and behaviour.
+
+
+// Sequential
+function sequential(userId){
+    getUserProfiles().then(profiles => {
+        const user = profiles.find((profile) => profile.id === userId)
+        console.log("User", user)
+        getUserPosts().then(posts => {
+            const userPosts = posts.filter((post) => post.creator === userId)
+            console.log("User Posts", userPosts)
+            getUserComments().then(comments => {
+                let userComments = []
+                userPosts.forEach(post => {
+                userComments = comments.filter((comment) => comment.postId === post.id)    
+                })
+                console.log("User Comments are", userComments)
+            })
+        })
+    })
+}
+
+sequential(17)
+
+
 
 
 
@@ -80,6 +121,57 @@ console.log("get comment by post id", comments)
 // Refactor with Async/Await:
 // Rewrite each function to use async/await syntax instead of .then.
 // Use try...catch blocks to handle errors and provide custom error messages for each failure point.
+
+// console.log("Refactor with Async/Await:")
+
+// async function delay1(ms){
+//     return setTimeout(ms)
+// }
+
+
+// async function getUserProfile1() {
+//     await delay1(3000)
+//     return {
+//         id: 123,
+//         url: "Fake URL",
+//         name: "John"
+//     }
+// }
+
+
+// async function getUserComments1(postId){
+//     await delay1(3000)
+//     // Return is a promise
+//     return ["comment1", "comment2", "comment3"]
+// }
+
+
+// async function getUserPosts1(userId){
+//     await delay1(3000)
+//     // Return is a promise
+//     return [
+//         {
+//             postId: 1,
+//             post: "Hello"
+//         },
+//         {
+//             postId: 2,
+//             post: "This is another post"
+//         }
+//     ]
+// }
+
+// const profile1 = await getUserProfile1()
+// console.log("user profile", profile1)
+
+// const posts1 = await getUserPosts1(profile1.id)
+// console.log("post by user id", posts1)
+
+// const comments1 = await getUserComments1( posts1[0].postId)
+// console.log("get comment by post id", comments1)
+
+// console.log(`\n`)
+
 
 
 
