@@ -3,10 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css"/>
     <script defer src="main.js"></script>
     <title>Lab 6</title>
 </head>
 <body>
+    <h1>Working with Asynchronous JavaScript</h1>
+    <h1>See results in console</h1>
+
+    <div class="button-container">
+        <div class="container">
+            <h2>Simulate Data Fetching Using Promises</h2>
+            <button id="q1-profiles">getUserProfiles()</button>
+            <button id="q1-comments">getUserComments()</button>
+            <button id="q1-posts">getUserPosts()</button>
+        </div>
+        <div class="container">
+            <h2>Implement Sequential and Parallel Data Fetching</h2>
+            <button id="q2-sequential">sequential(17)</button>
+            <button id="q2-parallel">parallel(23)</button>
+        </div>
+        <div class="container">
+            <h2>Refactor with Async/Await</h2>
+            <button id="q3-profiles">getUserProfilesWithAsync()</button>
+            <button id="q3-posts">getUserpostsWithAsync()</button>
+            <button id="q3-comments">getUserCommentsWithAsync()</button>
+            <button id="q3-sequential">sequentialAsyncSynta(17)</button>
+            <button id="q3-parallel">parallelAsyncSyntax(23)</button>
+        </div>
+        <div class="container">
+            <h2>Error Handling Simulation</h2>
+            <button id="q4-sequential">sequentialAsyncSyntaxRandom(17)</button>
+            <button id="q4-parallel">parallelAsyncSyntaxRandom(23)</button>
+        </div>
+        <div class="container">
+            <h2>Chaining Async Functions</h2>
+            <button id="q5-userProfile">getUserContent(17)</button>
+        </div>
+        
+
+    </div>
     
 </body>
 </html>

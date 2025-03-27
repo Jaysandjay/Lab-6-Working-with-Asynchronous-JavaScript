@@ -62,6 +62,7 @@ const comments = [
 function getUserProfiles() {
     return new Promise (resolve => {
         setTimeout(() =>{
+            console.log(profiles)
             resolve(profiles)  
         }, 2000)
     })      
@@ -71,6 +72,7 @@ function getUserProfiles() {
 function getUserComments(){
     return new Promise (resolve => {
         setTimeout(() => {
+            console.log(comments)
             resolve(comments)
         }, 2000)
     })   
@@ -80,6 +82,7 @@ function getUserComments(){
 function getUserPosts(){
     return new Promise(resolve => {
         setTimeout(()=> {
+            console.log(posts)
             resolve(posts)  
         }, 2000)
     })
@@ -141,39 +144,44 @@ function parallel(userId){
 // Use try...catch blocks to handle errors and provide custom error messages for each failure point.
 
 
-function delay1(ms) {
+function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
-async function getUserProfiles1() {
+async function getUserProfilesWithAsync() {
     try {
-     await delay1(3000)
-    return profiles   
+        await delay(3000)
+        console.log(profiles)
+        return profiles   
     }catch (error){
         console.error("Error fetching profiles")
+        return error
     }
-    
 }
 
 
-async function getUserComments1(){
+async function getUserCommentsWithAsync(){
     try {
-    await delay1(3000)
-    return comments    
+        await delay(3000)
+        console.log(comments)
+        return comments    
     } catch (error){
         console.error("Error fetching comments")
+        return error
     }
     
 }
 
 
-async function getUserPosts1(){
+async function getUserPostsWithAsync(){
     try{
-      await delay1(3000)
-      return posts  
+        await delay(2000)
+        console.log(posts)
+        return posts  
     } catch(error){
         console.error("error fetching Posts", error)
+        return error
     }
 }
 
@@ -181,15 +189,15 @@ async function getUserPosts1(){
 // sequential 
 async function sequentialAsyncSyntax(userId){
     try{
-        const profiles = await getUserProfiles1()
+        const profiles = await getUserProfilesWithAsync()
         const user = profiles.find((profile) => profile.id === userId)
         console.log("User", user)
 
-        const posts = await getUserPosts1()
+        const posts = await getUserPostsWithAsync()
         const userPosts = posts.filter((post) => post.creator === userId)
         console.log("User Posts", userPosts)
 
-        const comments = await getUserComments1()
+        const comments = await getUserCommentsWithAsync()
         let userComments = []
         userPosts.forEach(post => {
             userComments = comments.filter((comment) => comment.postId === post.id)    
@@ -206,9 +214,9 @@ async function sequentialAsyncSyntax(userId){
 async function parallelAsyncSyntax(userId){
     try{
         const [profiles, posts, comments] = await Promise.all([
-            getUserProfiles1(),
-            getUserPosts1(),
-            getUserComments1()
+            getUserProfilesWithAsync(),
+            getUserPostsWithAsync(),
+            getUserCommentsWithAsync()
         ])
         const user = profiles.find((profile) => profile.id === userId)
         console.log("User", user)
@@ -241,37 +249,42 @@ async function sequentialAsyncSyntaxRandom(userId){
     const profileFail = Math.floor(Math.random() * 2)
     const postFail = Math.floor(Math.random() * 2)
     const commentFail = Math.floor(Math.random() * 2)
-    console.log(profileFail)
-    console.log(postFail)
-    console.log(commentFail)
+    // console.log(profileFail)
+    // console.log(postFail)
+    // console.log(commentFail)
 
     if(profileFail){
         console.error("Failure with fetching profiles")
+        throw "Failure with fetching profiles"
     }else{
-        const profiles = await getUserProfiles1()
+        const profiles = await getUserProfilesWithAsync()
         const user = profiles.find((profile) => profile.id === userId)
         console.log("User", user)   
     }   
 
     if(postFail){
         console.error("Failure with fetching posts")
+        throw "Failure with fetching posts"
     }else {
-        const posts = await getUserPosts1()
+        const posts = await getUserPostsWithAsync()
         const userPosts = posts.filter((post) => post.creator === userId)
         console.log("User Posts", userPosts)  
     }
     
     if(profileFail){
         console.error("Failure fetching comments due to failure of fetching profiles")
+        throw "Failure fetching comments due to failure of fetching profiles"
     }else if(commentFail){
         console.error("Failure fetching comments")
+        throw "Failure fetching comments"
     }else {
-        const comments = await getUserComments1()
+        const comments = await getUserCommentsWithAsync()
         let userComments = []
         userPosts.forEach(post => {
             userComments = comments.filter((comment) => comment.postId === post.id)    
         })
         console.log("User Comments are", userComments)  
+        return(userComments)
     }
 }
 
@@ -290,8 +303,9 @@ const commentFail = Math.floor(Math.random() * 2)
 async function getUserProfilesRandom() {
     if(profileFail){
         console.error("Failure in fetching profiles")
+        throw "Failure in fetching profiles"
     }else{
-        await delay1(3000)
+        await delay(1000)
         return profiles   
     }
 }
@@ -300,8 +314,9 @@ async function getUserProfilesRandom() {
 async function getUserPostsRandom(){
     if(postFail){
         console.error("Failure in fetching posts")
+        throw "Failure in fetching posts"
     }else{
-        await delay1(3000)
+        await delay(1000)
         return posts  
     }
 }
@@ -310,11 +325,36 @@ async function getUserPostsRandom(){
 async function getUserCommentsRandom(){
     if(postFail){
         console.error("Cant fetch comments due to failure of fetching posts")
+        throw "Cant fetch comments due to failure of fetching posts"
     }else if (commentFail){
         console.error("Faliure in fetching comments")
+        throw "Faliure in fetching comments"
     }else{
-        await delay1(3000)
+        await delay(1000)
         return comments    
+    }
+}
+
+async function parallelAsyncSyntaxRandom(userId){
+    try{
+        const [profiles, posts, comments] = await Promise.all([
+            getUserProfilesRandom(),
+            getUserPostsRandom(),
+            getUserCommentsRandom()
+        ])
+        const user = profiles.find((profile) => profile.id === userId)
+        console.log("User", user)
+
+        const userPosts = posts.filter((post) => post.creator === userId)
+        console.log("User Posts", userPosts)
+        
+        let userComments = []
+        userPosts.forEach(post => {
+        userComments = comments.filter((comment) => comment.postId === post.id)    
+        })
+        console.log("User Comments are", userComments)
+    } catch(error){
+        console.error("Error fetching")
     }
 }
 
@@ -359,4 +399,53 @@ async function getUserContent(userId){
     }
 }
 
-getUserContent(17)
+// getUserContent(17)
+
+
+
+// JS For HTML
+
+// Question 1
+const q1Profiles = document.getElementById("q1-profiles")
+const q1Comments = document.getElementById("q1-comments")
+const q1Posts = document.getElementById("q1-posts")
+
+q1Profiles.addEventListener("click", getUserProfiles)
+q1Comments.addEventListener("click", getUserComments)
+q1Posts.addEventListener("click", getUserPosts)
+
+
+// Question 2
+const q2Sequential= document.getElementById("q2-sequential") 
+const q2Parallel = document.getElementById("q2-parallel")
+
+q2Sequential.addEventListener("click", function() {sequential(17)})
+q2Parallel.addEventListener("click", function () {parallel(23)})
+
+
+// Question 3
+const q3Profiles = document.getElementById("q3-profiles")
+const q3Posts = document.getElementById("q3-posts")
+const q3Comments = document.getElementById("q3-comments")
+const q3Sequential = document.getElementById("q3-sequential")
+const q3Parallel = document.getElementById("q3-parallel")
+
+q3Profiles.addEventListener("click", getUserProfilesWithAsync)
+q3Posts.addEventListener("click", getUserPostsWithAsync)
+q3Comments.addEventListener("click", getUserCommentsWithAsync)
+q3Sequential.addEventListener("click", function(){sequentialAsyncSyntax(17)})
+q3Parallel.addEventListener("click", function(){parallelAsyncSyntax(23)})
+
+
+// Question 4
+const q4Sequential = document.getElementById("q4-sequential")
+const q4Parallel = document.getElementById("q4-parallel")
+
+q4Sequential.addEventListener("click", function(){sequentialAsyncSyntaxRandom(17)})
+q4Parallel.addEventListener("click", function(){parallelAsyncSyntaxRandom(23)})
+
+
+// Question 5
+const q5UserProfile = document.getElementById("q5-userProfile")
+
+q5UserProfile.addEventListener("click", function(){getUserContent(17)})
