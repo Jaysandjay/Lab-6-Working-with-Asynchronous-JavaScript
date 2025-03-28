@@ -255,7 +255,6 @@ async function sequentialAsyncSyntaxRandom(userId){
 
     if(profileFail){
         console.error("Failure with fetching profiles")
-        throw "Failure with fetching profiles"
     }else{
         const profiles = await getUserProfilesWithAsync()
         const user = profiles.find((profile) => profile.id === userId)
@@ -264,7 +263,6 @@ async function sequentialAsyncSyntaxRandom(userId){
 
     if(postFail){
         console.error("Failure with fetching posts")
-        throw "Failure with fetching posts"
     }else {
         const posts = await getUserPostsWithAsync()
         const userPosts = posts.filter((post) => post.creator === userId)
@@ -273,18 +271,21 @@ async function sequentialAsyncSyntaxRandom(userId){
     
     if(profileFail){
         console.error("Failure fetching comments due to failure of fetching profiles")
-        throw "Failure fetching comments due to failure of fetching profiles"
     }else if(commentFail){
         console.error("Failure fetching comments")
-        throw "Failure fetching comments"
     }else {
-        const comments = await getUserCommentsWithAsync()
-        let userComments = []
-        userPosts.forEach(post => {
-            userComments = comments.filter((comment) => comment.postId === post.id)    
-        })
-        console.log("User Comments are", userComments)  
-        return(userComments)
+        try{
+            const comments = await getUserCommentsWithAsync()
+            let userComments = []
+            userPosts.forEach(post => {
+                userComments = comments.filter((comment) => comment.postId === post.id)    
+            })
+            console.log("User Comments are", userComments)  
+            return(userComments)  
+        }catch (error){
+            console.error("Failed to fetch Comments")
+        }
+        
     }
 }
 
@@ -314,7 +315,6 @@ async function getUserProfilesRandom() {
 async function getUserPostsRandom(){
     if(postFail){
         console.error("Failure in fetching posts")
-        throw "Failure in fetching posts"
     }else{
         await delay(1000)
         return posts  
@@ -325,10 +325,8 @@ async function getUserPostsRandom(){
 async function getUserCommentsRandom(){
     if(postFail){
         console.error("Cant fetch comments due to failure of fetching posts")
-        throw "Cant fetch comments due to failure of fetching posts"
     }else if (commentFail){
         console.error("Faliure in fetching comments")
-        throw "Faliure in fetching comments"
     }else{
         await delay(1000)
         return comments    
