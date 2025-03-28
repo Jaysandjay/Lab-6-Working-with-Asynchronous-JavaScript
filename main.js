@@ -304,7 +304,6 @@ const commentFail = Math.floor(Math.random() * 2)
 async function getUserProfilesRandom() {
     if(profileFail){
         console.error("Failure in fetching profiles")
-        throw "Failure in fetching profiles"
     }else{
         await delay(1000)
         return profiles   
